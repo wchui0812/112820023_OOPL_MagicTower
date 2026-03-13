@@ -1,12 +1,13 @@
 set(SRC_FILES
-    src/App/App.cpp
-    src/App/main.cpp
-    src/Map/Map.cpp
+        src/App/App.cpp
+        src/App/main.cpp
+        src/Map/Map.cpp
 )
 
 set(INCLUDE_FILES
-    include/App/App.hpp
-    include/Map/Map.hpp
+        include/App/App.hpp
+        include/Map/Map.hpp
+        include/Character/Character.hpp
 )
 
 set(TEST_FILES

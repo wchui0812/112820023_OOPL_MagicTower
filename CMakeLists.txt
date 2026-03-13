@@ -42,6 +42,7 @@ add_executable(${PROJECT_NAME}
         include/App/App.hpp
         include/Map/Map.hpp
         include/App/BackgroundImage.hpp
+        include/Character/Character.hpp
 )
 
 if(MSVC)
