@@ -27,7 +27,7 @@ private:
 
     BackgroundImage m_Wall;  // 牆壁物件
     BackgroundImage m_Floor; // 地板物件
-    float m_TileSize = 32.0f; // 假設每個圖塊是 32x32 像素
+    float m_TileSize = 77.0f; // 假設每個圖塊是 32x32 像素
 };
 
 #endif
