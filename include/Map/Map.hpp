@@ -2,32 +2,58 @@
 #define MAP_HPP
 
 #include <vector>
+#include <string>
 #include "App/BackgroundImage.hpp" // 使用你現有的背景圖片類別
+#include "Map/Stair.hpp"
 
 class Map {
 public:
     Map();
     void Draw(); // 這是核心的雙層 for 迴圈所在
+    // 從檔案載入特定樓層
+    void LoadLevel(const std::string& filePath);
+
+    // 1. 取得座標點的格子類型
+    int GetTileType(float x, float y) const;
+
+    // 2. 樓層切換
+    void NextLevel() {
+        if (m_CurrentLevel + 1 < (int)m_MapData.size()) m_CurrentLevel++;
+    }
+    void PrevLevel() {
+        if (m_CurrentLevel > 0) m_CurrentLevel--;
+    }
+
+    // 3. 取得當前樓層 (用於 Log 顯示)
+    int GetCurrentLevel() const {
+        return m_CurrentLevel;
+    }
+
+    // 控制樓層
+    void SetLevel(int level) {
+        m_CurrentLevel = level;
+    }
+
+    // 檢查目標位置是否可以通行
+    bool IsWalkable(float x, float y) const;
+
+    // 新增：尋找特定格子(如 4 或 5)在當前樓層的座標
+    glm::vec2 FindTilePosition(int targetType) const;
+
 
 private:
-    // 定義 11x11 的小陣列 (1 為牆壁，0 為地板)
-    int m_MapData[11][11] = {
-        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1},
-        {1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1},
-        {1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1},
-        {1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1},
-        {1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-    };
+    int m_CurrentLevel = 0;
+    float m_TileSize = 60.0f;
+
+    // 三維向量：[樓層][列][行]
+    std::vector<std::vector<std::vector<int>>> m_MapData;
 
     BackgroundImage m_Wall;  // 牆壁物件
     BackgroundImage m_Floor; // 地板物件
-    float m_TileSize = 77.0f; // 假設每個圖塊是 32x32 像素
+    BackgroundImage m_Lava;
+    BackgroundImage m_Shine;
+    BackgroundImage m_UpStairs;   // 5: 上樓
+    BackgroundImage m_DownStairs;
 };
 
 #endif

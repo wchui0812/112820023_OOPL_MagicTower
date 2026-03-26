@@ -1,0 +1,6 @@
+road 0
+wall_b 1
+lava 2
+wall_shine 3
+downstair 4
+upstair 5

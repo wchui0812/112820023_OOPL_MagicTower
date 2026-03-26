@@ -3,7 +3,7 @@
 
 #include "pch.hpp" // IWYU pragma: export
 #include "Map/Map.hpp"
-#include "Character/Character.hpp"
+#include "Character/Player.hpp"
 
 class App {
 public:
@@ -21,7 +21,8 @@ public:
 
 private:
     Map m_GameMap;
-    std::shared_ptr<Character> m_Player;
+    std::shared_ptr<Player> m_Player;
+
     State m_CurrentState = State::START;
 
 private:

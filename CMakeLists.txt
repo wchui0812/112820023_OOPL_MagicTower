@@ -38,11 +38,18 @@ add_executable(${PROJECT_NAME}
         src/App/App.cpp
         src/App/main.cpp
         src/Map/Map.cpp
+        src/Map/Stair.cpp
+        src/Character/Player.cpp
+
     ${INCLUDE_FILES}
         include/App/App.hpp
-        include/Map/Map.hpp
         include/App/BackgroundImage.hpp
+        include/Map/Map.hpp
+        include/Map/Stair.hpp
+        include/Character/Player.hpp
         include/Character/Character.hpp
+
+
 )
 
 if(MSVC)
