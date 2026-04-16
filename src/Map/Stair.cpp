@@ -5,7 +5,7 @@ void Stair::CheckAndTransport(glm::vec2& playerPos, Map& map, const glm::vec2& m
     int tileType = map.GetTileType(playerPos.x, playerPos.y);
     float moveDist = 56.0f; // 你的格子大小
 
-    LOG_DEBUG("Player is standing on Tile Type: {}", tileType);
+    //LOG_DEBUG("Player is standing on Tile Type: {}", tileType);
 
     if (tileType == 5 || tileType == 4) {
         int targetType = (tileType == 5) ? 4 : 5; // 上樓找下樓梯(4)，下樓找上樓梯(5)

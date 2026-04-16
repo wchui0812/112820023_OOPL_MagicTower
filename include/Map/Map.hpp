@@ -7,6 +7,9 @@
 #include "Map/Stair.hpp"
 #include "Map/Door.hpp"
 #include "Item/Item.hpp"
+#include "Enemy/Enemy.hpp"
+#include "NPC/NPC.hpp"
+#include "Util/Renderer.hpp"
 
 class Map {
 
@@ -21,15 +24,25 @@ public:
 
     void LoadItems(const std::string& filePath);
 
+
     // 1. 取得座標點的格子類型
     int GetTileType(float x, float y) const;
 
     // 2. 樓層切換
     void NextLevel() {
-        if (m_CurrentLevel + 1 < (int)m_MapData.size()) m_CurrentLevel++;
+        if (m_CurrentLevel + 1 < (int)m_MapData.size()) {
+            m_CurrentLevel++;
+            this->InitLevelEnemies(); // 確保這裡有執行
+            //this->InitLevelNPCs();
+            LOG_INFO("Switched to Level {}", m_CurrentLevel);
+        }
     }
     void PrevLevel() {
-        if (m_CurrentLevel > 0) m_CurrentLevel--;
+        if (m_CurrentLevel > 0) {
+            m_CurrentLevel--;
+            InitLevelEnemies();
+            //InitLevelNPCs();
+        }
     }
 
     // 3. 取得當前樓層 (用於 Log 顯示)
@@ -40,6 +53,8 @@ public:
     // 控制樓層
     void SetLevel(const int level) {
         m_CurrentLevel = level;
+        InitLevelEnemies();
+        //InitLevelNPCs();
     }
 
     // 檢查目標位置是否可以通行
@@ -63,15 +78,45 @@ public:
         else if (type == 25) m_IronFence.StartAnimation();
     }
 
+    // 1. 宣告 LoadEnemies 函式供外部呼叫
+    void LoadEnemies(const std::string& filePath);
+
+    // 2. 宣告初始化當前樓層敵人的函式
+    void InitLevelEnemies();
+
+    std::shared_ptr<Enemy> GetEnemyAt(float x, float y);
+
+    // 新增：將敵人從當前樓層移除
+    void RemoveEnemy(std::shared_ptr<Enemy> enemy);
+
+    // 3. 儲存所有樓層的原始數據：[樓層][列][行]
+    std::vector<std::vector<std::vector<int>>> m_EnemyRawData;
+
+    // 4. 儲存當前樓層生成的敵人物件實體
+    const std::vector<std::shared_ptr<Enemy>>& GetEnemies() const { return m_Enemies; }
+
+    //void LoadNPCs(const std::string& filePath);
+    //void InitLevelNPCs();
+    //const std::vector<std::shared_ptr<NPC>>& GetNPCs() const { return m_NPCs; }
+    //std::shared_ptr<NPC> GetNPCAt(float x, float y);
+
 
 private:
     int m_CurrentLevel = 0;
-    float m_TileSize = 60.0f;
+    float m_StartX = -165.0f;
+    float m_StartY = 308.0f;
+    float m_TileSize = 56.0f;
 
     // layer：[樓層][列][行]
     std::vector<std::vector<std::vector<int>>> m_MapData;
     // 儲存物品資料：[樓層][列][行]
     std::vector<std::vector<std::vector<int>>> m_ItemData;
+
+    std::vector<std::shared_ptr<Enemy>> m_Enemies;
+
+    //std::vector<std::vector<std::vector<int>>> m_NPCRawData;
+    //std::vector<std::shared_ptr<NPC>> m_NPCs;
+
 
     BackgroundImage m_Wall;  // 牆壁物件
     BackgroundImage m_Floor; // 地板物件
@@ -116,6 +161,8 @@ private:
     bool m_DoorAnimating = false;
     glm::vec2 m_AnimatingDoorPos = {0, 0};
     int m_AnimatingDoorType = 0;
+
+
 };
 
 #endif

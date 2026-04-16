@@ -23,7 +23,7 @@ Item::Item(ItemType type) : m_Type(type), BackgroundImage("") {
         case ItemType::BIG_WING:    path = RESOURCE_DIR "/Image/Item/big_wing.png"; break;
         case ItemType::HOLY_WATER:  path = RESOURCE_DIR "/Image/Item/holy_water.bmp"; break;
         case ItemType::SWORD_B:     path = RESOURCE_DIR "/Image/Item/sword_b.bmp"; break;
-        case ItemType::SHIELD_A:    path = RESOURCE_DIR "/Image/Item/shield_b.bmp"; break;
+        case ItemType::SHIELD_A:    path = RESOURCE_DIR "/Image/Item/shield_a.bmp"; break;
         case ItemType::RED_VERI:    path = RESOURCE_DIR "/Image/Item/red_veri.bmp"; break;
         case ItemType::BLUE_VERI:   path = RESOURCE_DIR "/Image/Item/blue_veri.bmp"; break;
     }

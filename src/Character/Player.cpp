@@ -24,7 +24,7 @@ Player::Player() {
     m_ZIndex = 5.0f;
 }
 
-void Player::Update(Map& map) {
+void Player::Update(Map& map, BattleAnimation& anim) {
     float moveDist = 56.0f;
     glm::vec2 currentPos = m_Transform.translation;
     glm::vec2 targetPos = currentPos; // 用來存放「預計要去的那一格」
@@ -60,7 +60,7 @@ void Player::Update(Map& map) {
 
     // 2. 將碰撞與觸發邏輯委託給 CollisionHandler
     // 傳入 *this 與 map，讓 Handler 處理數值增減與門的動畫觸發
-    if (CollisionHandler::HandleCollision(*this, map, targetPos)) {
+    if (CollisionHandler::HandleCollision(*this, map, targetPos, anim)) {
         // 如果 Handler 回傳 true，代表該格子可踏入（如地板、撿完的物品）
         m_Transform.translation = targetPos;
 

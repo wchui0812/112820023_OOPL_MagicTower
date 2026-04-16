@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Map/Map.hpp"
+#include "System/BattleAnimation.hpp"
 #include "Util/GameObject.hpp"
 #include "Util/Image.hpp"
 
@@ -33,7 +34,7 @@ public:
         return m_Transform.translation;
     }
 
-    void Update(Map & map);
+    void Update(Map& map, BattleAnimation& anim);
 
     int m_Level = 1;
     int m_Hp = 1000;

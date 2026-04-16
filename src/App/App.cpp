@@ -1,5 +1,9 @@
 #include "App/App.hpp"
+#include "Map/Map.hpp"
 #include "Character/Player.hpp"
+#include "System/UIStatus.hpp"
+#include "System/BattleAnimation.hpp"
+#include "Enemy/Enemy.hpp"
 #include "Util/Image.hpp"
 #include "Util/Input.hpp"
 #include "Util/Keycode.hpp"
@@ -10,7 +14,7 @@
 void App::Start() {
     LOG_TRACE("Start");
 
-    m_MainBackground = std::make_shared<BackgroundImage>(RESOURCE_DIR "/Image/Scene/scene1.BMP");
+    m_MainBackground = std::make_shared<BackgroundImage>(RESOURCE_DIR "/Image/Scene/scene_final.BMP");
     m_MainBackground->SetPosition({0, 0});
     m_MainBackground->SetZIndex(-1.0f); // 置於最底層
 
@@ -32,19 +36,37 @@ void App::Start() {
     m_Player->SetPosition({playerX, playerY});
     m_Player->SetScale({1.6f, 1.6f});
 
+    m_BattleAnim = std::make_shared<BattleAnimation>();
+
     m_CurrentState = State::UPDATE;
 }
 
 void App::Update() {
     static Util::Renderer renderer;
 
-    m_GameMap.UpdateAnimation(Util::Time::GetDeltaTime());
+    float deltaTime = Util::Time::GetDeltaTimeMs() / 1000.0f;
+    m_GameMap.UpdateAnimation(deltaTime);
+
+    if (m_BattleAnim && m_BattleAnim->IsVisible()) {
+        if (m_BattleAnim->IsFinished()) {
+            m_BattleAnim->Reset();
+        } else {
+            // 繪製動畫並返回，不讓玩家在打架時走路
+            renderer.AddChild(m_BattleAnim);
+            renderer.Update();
+            return;
+        }
+    }
+
+    m_Player->Update(m_GameMap, *m_BattleAnim);
+    m_UI.Update(*m_Player, m_GameMap);
 
     renderer.AddChild(m_MainBackground);
     m_GameMap.Draw();
 
-    m_Player->Update(m_GameMap);
     renderer.AddChild(m_Player);
+
+    m_UI.Draw();
 
     renderer.Update();
 

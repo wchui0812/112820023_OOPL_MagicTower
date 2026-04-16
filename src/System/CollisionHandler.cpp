@@ -1,9 +1,33 @@
 #include "System/CollisionHandler.hpp"
+#include "System/Battle.hpp"
+#include "System/BattleAnimation.hpp"
 #include "Util/Logger.hpp"
 
 #include <cmath>
 
-bool CollisionHandler::HandleCollision(Player& player, Map& map, const glm::vec2& targetPos) {
+bool CollisionHandler::HandleCollision(Player& player, Map& map, const glm::vec2& targetPos, BattleAnimation& anim) {
+    auto enemy = map.GetEnemyAt(targetPos.x, targetPos.y);
+    if (enemy) {
+        if (Battle::CanWin(player, *enemy)) {
+            // 播放動畫
+            anim.Play(targetPos);
+
+            // 執行戰鬥數值計算與移除敵人
+            Battle::ExecuteBattle(player, *enemy);
+            map.RemoveEnemy(enemy);
+
+            return true; // 動畫播放完後下一幀玩家會移動過去
+        }
+        return false;
+    }
+
+    //auto npc = map.GetNPCAt(targetPos.x, targetPos.y);
+    //if (npc) {
+        //LOG_INFO("Talk to NPC!");
+        // 這裡未來可以觸發 UI 對話系統
+        //return false; // 擋住玩家，不讓玩家穿過 NPC
+    //}
+
     int tileType = map.GetTileType(targetPos.x, targetPos.y);
 
     // 1. 處理鑰匙 (10-12)

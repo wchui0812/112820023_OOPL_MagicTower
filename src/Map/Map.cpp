@@ -5,6 +5,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <algorithm>
 
 Map::Map() 
     : m_Wall(RESOURCE_DIR "/Image/Road/wall_b.bmp"),
@@ -70,15 +71,23 @@ Map::Map()
         // 讀取物品層
         std::string itemPath = RESOURCE_DIR "/Item/Item" + std::to_string(i) + ".txt";
         LoadItems(itemPath);
+
+        std::string enemyPath = RESOURCE_DIR "/Enemy/Enemy" + std::to_string(i) + ".txt";
+        LoadEnemies(enemyPath);
+
+        //std::string npcPath = RESOURCE_DIR "/NPC/NPC" + std::to_string(i) + ".txt";
+        //LoadEnemies(npcPath);
     }
-    //for (int i = 0; i < 2; ++i) {
+    //for (int i = 0; i < 7; ++i) {
         // 讀取物品層
-        //std::string itemPath = RESOURCE_DIR "/Item/Item" + std::to_string(i) + ".txt";
-        //LoadItems(itemPath);
+        //std::string enemyPath = RESOURCE_DIR "/Enemy/Enemy" + std::to_string(i) + ".txt";
+        //LoadEnemies(enemyPath);
     //}
 
 
     m_CurrentLevel = 0;
+    InitLevelEnemies();
+    //InitLevelNPCs();
 }
 
 void Map::UpdateAnimation(float deltaTime) {
@@ -132,6 +141,52 @@ void Map::LoadItems(const std::string& filePath) {
 
     LOG_INFO("Item layer loaded successfully: {}", filePath);
 }
+
+void Map::LoadEnemies(const std::string& filePath) {
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+        LOG_ERROR("Unable to open enemy save file: {}", filePath);
+        return;
+    }
+
+    std::vector<std::vector<int>> levelData(11, std::vector<int>(11));
+    for (int i = 0; i < 11; i++) {
+        for (int j = 0; j < 11; j++) {
+            file >> levelData[i][j];
+        }
+    }
+    m_EnemyRawData.push_back(levelData);
+    file.close();
+    LOG_INFO("Enemy layer loaded successfully: {}", filePath);
+}
+
+// src/Map/Map.cpp
+
+//void Map::LoadNPCs(const std::string& filePath) {
+    //std::ifstream file(filePath);
+    //if (!file.is_open()) {
+       // m_NPCRawData.push_back(std::vector<std::vector<int>>(11, std::vector<int>(11, 0)));
+        //LOG_ERROR("Unable to open NPC save file: {}", filePath);
+        //return;
+    //}
+
+    // 建立一個 11x11 的二維向量來暫存這一層的 NPC 配置
+    //std::vector<std::vector<int>> levelData(11, std::vector<int>(11));
+    //for (int i = 0; i < 11; i++) {
+        //for (int j = 0; j < 11; j++) {
+           // if (!(file >> levelData[i][j])) {
+            //   levelData[i][j] = 0; // 讀取失敗預設為 0 (無 NPC)
+            //}
+            //file >> levelData[i][j];
+        //}
+   // }
+
+    // 將這一層的數據推入三維向量 m_NPCRawData 中
+    //m_NPCRawData.push_back(levelData);
+    //file.close();
+
+    //LOG_INFO("NPC layer loaded successfully: {}", filePath);
+//}
 
 void Map::Draw() {
     if (m_MapData.empty() || m_ItemData.empty()) return;
@@ -189,7 +244,6 @@ void Map::Draw() {
                 LOG_DEBUG("The coordinates ({}, {}) read an unknown number: {}", i, j, tileType);
             }
 
-            //BackgroundImage* target = nullptr; // 用指標暫存要畫的圖片
 
             // --- 第二層：優先判定物品層，若無物品則判定地形層 ---
             if (itemType != 0) {
@@ -376,6 +430,17 @@ void Map::Draw() {
             }
         }
     }
+
+    for (auto& enemy : m_Enemies) {
+        enemy->UpdateImage(m_ShowAltFrame);
+        renderer.AddChild(enemy);
+    }
+
+    //for (auto& npc : m_NPCs) {
+        //npc->UpdateImage(m_ShowAltFrame); // 跟岩漿、敵人同步動畫
+        //renderer.AddChild(npc);
+    //}
+
     renderer.Update();
 }
 
@@ -455,6 +520,143 @@ void Map::RemoveTile(float x, float y) {
         // 修改物品層資料，將其設為 0（空格）
         m_ItemData[m_CurrentLevel][row][col] = 0;
         m_MapData[m_CurrentLevel][row][col] = 0;
-        LOG_INFO("Item removed, floor: {}, coordinates: ({}, {})", m_CurrentLevel, row, col);
+        //LOG_INFO("Item removed, floor: {}, coordinates: ({}, {})", m_CurrentLevel, row, col);
     }
 }
+
+void Map::InitLevelEnemies() {
+    m_Enemies.clear(); // 清空上一層的敵人
+    //LOG_DEBUG("Cleared enemies. Current Level: {}, Enemy count: {}", m_CurrentLevel, m_Enemies.size());
+
+    if (m_CurrentLevel >= static_cast<int>(m_EnemyRawData.size())) return;
+
+    int level = m_CurrentLevel;
+    for (int row = 0; row < 11; row++) {
+        for (int col = 0; col < 11; col++) {
+            int id = m_EnemyRawData[level][row][col];
+            if (id <= 0) continue; // 0 代表沒怪物
+
+            //if (id > 0) {
+            //    LOG_DEBUG("Found Enemy ID: {} at Row: {}, Col: {}", id, row, col);
+            //}
+
+            std::shared_ptr<Enemy> enemy = nullptr;
+
+            if (id == 50) enemy = std::make_shared<Enemy>(Enemy::Type::GREEN_SLIME);
+            else if (id == 51) enemy = std::make_shared<Enemy>(Enemy::Type::RED_SLIME);
+            else if (id == 52) enemy = std::make_shared<Enemy>(Enemy::Type::BAT);
+            else if (id == 53) enemy =  std::make_shared<Enemy>(Enemy::Type::SKELETON_C);
+            else if (id == 54) enemy =  std::make_shared<Enemy>(Enemy::Type::BIG_SLIME);
+            else if (id == 55) enemy =  std::make_shared<Enemy>(Enemy::Type::SKELETON_B);
+            else if (id == 56) enemy =  std::make_shared<Enemy>(Enemy::Type::PRIEST_C);
+            else if (id == 57) enemy =  std::make_shared<Enemy>(Enemy::Type::BIG_BAT);
+            else if (id == 58) enemy =  std::make_shared<Enemy>(Enemy::Type::ZOMBIE);
+            else if (id == 59) enemy =  std::make_shared<Enemy>(Enemy::Type::SKELETON_A);
+            else if (id == 60) enemy =  std::make_shared<Enemy>(Enemy::Type::ROCK);
+            else if (id == 61) enemy =  std::make_shared<Enemy>(Enemy::Type::MAGICIAN_B);
+            else if (id == 62) enemy =  std::make_shared<Enemy>(Enemy::Type::GATE_KEEPER_C);
+            else if (id == 63) enemy =  std::make_shared<Enemy>(Enemy::Type::RED_BAT);
+            else if (id == 64) enemy =  std::make_shared<Enemy>(Enemy::Type::MAGICIAN_A);
+            else if (id == 65) enemy =  std::make_shared<Enemy>(Enemy::Type::SLIME_LORD);
+            else if (id == 66) enemy =  std::make_shared<Enemy>(Enemy::Type::PRIEST_A);
+            else if (id == 67) enemy =  std::make_shared<Enemy>(Enemy::Type::MAGIC_SERGEANT_D);
+            else if (id == 68) enemy =  std::make_shared<Enemy>(Enemy::Type::ZOMBIE_KNIGHT);
+            else if (id == 69) enemy =  std::make_shared<Enemy>(Enemy::Type::GATE_KEEPER_B);
+            else if (id == 70) enemy =  std::make_shared<Enemy>(Enemy::Type::GATE_KEEPER_A);
+            else if (id == 71) enemy =  std::make_shared<Enemy>(Enemy::Type::SWORDS_MAN);
+            else if (id == 72) enemy =  std::make_shared<Enemy>(Enemy::Type::KNIGHT);
+            else if (id == 73) enemy =  std::make_shared<Enemy>(Enemy::Type::IRON_KNIGHT_A);
+            else if (id == 74) enemy =  std::make_shared<Enemy>(Enemy::Type::SOUL_SKELETON_KNIGHT);
+            else if (id == 75) enemy =  std::make_shared<Enemy>(Enemy::Type::DARK_KNIGHT);
+            else if (id == 76) enemy =  std::make_shared<Enemy>(Enemy::Type::DARK_MAGICIAN);
+            else if (id == 77) enemy =  std::make_shared<Enemy>(Enemy::Type::SOUL_SKELETON);
+            else if (id == 78) enemy =  std::make_shared<Enemy>(Enemy::Type::MAGIC_SERGEANT_A);
+            else if (id == 79) enemy =  std::make_shared<Enemy>(Enemy::Type::SLIME_MAN);
+            else if (id == 80) enemy =  std::make_shared<Enemy>(Enemy::Type::VAMPIRE);
+            else if (id == 81) enemy =  std::make_shared<Enemy>(Enemy::Type::OCTOPUS);
+            else if (id == 82) enemy =  std::make_shared<Enemy>(Enemy::Type::DRAGON);
+
+            if (enemy) {
+                float posX = m_StartX + (col * m_TileSize) + (m_TileSize / 2.0f);
+                float posY = m_StartY - (row * m_TileSize) - (m_TileSize / 2.0f);
+                enemy->SetPosition({posX, posY});
+                m_Enemies.push_back(enemy);
+            }
+        }
+    }
+}
+
+std::shared_ptr<Enemy> Map::GetEnemyAt(float x, float y) {
+    for (auto& enemy : m_Enemies) {
+        // 修正點：使用 m_Transform.translation 獲取 glm::vec2 座標
+        glm::vec2 pos = enemy->m_Transform.translation;
+
+        // 判定玩家目標座標與怪物座標是否重疊 (容許誤差 5.0f)
+        if (std::abs(pos.x - x) < 5.0f && std::abs(pos.y - y) < 5.0f) {
+            return enemy;
+        }
+    }
+    return nullptr;
+}
+
+void Map::RemoveEnemy(std::shared_ptr<Enemy> enemy) {
+    if (!enemy) return;
+
+    // 1. 取得敵人在螢幕上的座標
+    glm::vec2 pos = enemy->m_Transform.translation;
+
+    // 2. 將螢幕座標轉換回地圖的 row 和 col (使用你已有的計算公式)
+    int col = static_cast<int>((pos.x - m_StartX + 0.1f) / m_TileSize);
+    int row = static_cast<int>((m_StartY - pos.y + 0.1f) / m_TileSize);
+
+    // 3. 安全檢查並修改原始數據，確保下次 InitLevelEnemies 時不會再生成它
+    if (row >= 0 && row < 11 && col >= 0 && col < 11) {
+        m_EnemyRawData[m_CurrentLevel][row][col] = 0; // 將該格設為空
+        LOG_INFO("Enemy data cleared for floor {}, pos ({}, {})", m_CurrentLevel, row, col);
+    }
+
+    // 4. 從當前顯示容器中移除
+    m_Enemies.erase(
+        std::remove(m_Enemies.begin(), m_Enemies.end(), enemy),
+        m_Enemies.end()
+    );
+}
+
+//void Map::InitLevelNPCs() {
+    //m_NPCs.clear();
+    //if (m_CurrentLevel >= static_cast<int>(m_NPCRawData.size())) return;
+
+    //for (int row = 0; row < 11; row++) {
+        //for (int col = 0; col < 11; col++) {
+            //int id = m_NPCRawData[m_CurrentLevel][row][col];
+            //if (id <= 0) continue;
+
+            //std::shared_ptr<NPC> npc = nullptr;
+            //if (id == 90) npc = std::make_shared<NPC>(NPC::Type::FAIRY);
+            //else if (id == 91) npc = std::make_shared<NPC>(NPC::Type::ELDER);
+            //else if (id == 92) npc = std::make_shared<NPC>(NPC::Type::MERCHANT);
+            //else if (id == 93) npc = std::make_shared<NPC>(NPC::Type::THIEF);
+            //else if (id == 94) npc = std::make_shared<NPC>(NPC::Type::PRINCESS);
+
+            //if (npc) {
+                //float posX = m_StartX + (col * m_TileSize) + (m_TileSize / 2.0f);
+                //float posY = m_StartY - (row * m_TileSize) - (m_TileSize / 2.0f);
+                //npc->m_Transform.translation = {posX, posY};
+                //m_NPCs.push_back(npc);
+            //}
+        //}
+    //}
+//}
+
+//std::shared_ptr<NPC> Map::GetNPCAt(float x, float y) {
+    //for (auto& npc : m_NPCs) {
+        // 獲取 NPC 的座標 (根據你之前的修正，使用 m_Transform.translation)
+        //glm::vec2 pos = npc->m_Transform.translation;
+
+        // 判定玩家目標座標與 NPC 座標是否重疊 (容許誤差 5.0f)
+        //if (std::abs(pos.x - x) < 5.0f && std::abs(pos.y - y) < 5.0f) {
+            //return npc;
+        //}
+    //}
+    //return nullptr;
+//}

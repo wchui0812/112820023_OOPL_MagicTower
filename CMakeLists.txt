@@ -54,7 +54,18 @@ add_executable(${PROJECT_NAME}
         include/Character/Character.hpp
         include/Item/Item.hpp
         include/System/CollisionHandler.hpp
-
+        include/System/UIStatus.hpp
+        src/System/UIStatus.cpp
+        include/System/TextObject.hpp
+        include/System/TextObject.hpp
+        src/System/TextObject.cpp
+        include/Enemy/Enemy.hpp
+        src/Enemy/Enemy.cpp
+        include/System/Battle.hpp
+        src/System/Battle.cpp
+        include/System/BattleAnimation.hpp
+        include/NPC/NPC.hpp
+        src/NPC/NPC.cpp
 
 
 )
