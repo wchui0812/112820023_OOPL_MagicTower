@@ -1,6 +1,7 @@
 #include "System/CollisionHandler.hpp"
 #include "System/Battle.hpp"
 #include "System/BattleAnimation.hpp"
+#include "System/NPCEventManager.hpp"
 #include "Util/Logger.hpp"
 
 #include <cmath>
@@ -21,12 +22,11 @@ bool CollisionHandler::HandleCollision(Player& player, Map& map, const glm::vec2
         return false;
     }
 
-    //auto npc = map.GetNPCAt(targetPos.x, targetPos.y);
-    //if (npc) {
-        //LOG_INFO("Talk to NPC!");
-        // 這裡未來可以觸發 UI 對話系統
-        //return false; // 擋住玩家，不讓玩家穿過 NPC
-    //}
+    auto npc = map.GetNPCAt(targetPos.x, targetPos.y);
+    if (npc) {
+        NPCEventManager::DispatchEvent(npc->GetType(), player, map, npc);
+        return false;
+    }
 
     int tileType = map.GetTileType(targetPos.x, targetPos.y);
 

@@ -33,15 +33,15 @@ public:
         if (m_CurrentLevel + 1 < (int)m_MapData.size()) {
             m_CurrentLevel++;
             this->InitLevelEnemies(); // 確保這裡有執行
-            //this->InitLevelNPCs();
+            this->InitLevelNPCs();
             LOG_INFO("Switched to Level {}", m_CurrentLevel);
         }
     }
     void PrevLevel() {
         if (m_CurrentLevel > 0) {
             m_CurrentLevel--;
-            InitLevelEnemies();
-            //InitLevelNPCs();
+            this->InitLevelEnemies(); // 確保這裡有執行
+            this->InitLevelNPCs();
         }
     }
 
@@ -54,7 +54,7 @@ public:
     void SetLevel(const int level) {
         m_CurrentLevel = level;
         InitLevelEnemies();
-        //InitLevelNPCs();
+        InitLevelNPCs();
     }
 
     // 檢查目標位置是否可以通行
@@ -92,14 +92,17 @@ public:
     // 3. 儲存所有樓層的原始數據：[樓層][列][行]
     std::vector<std::vector<std::vector<int>>> m_EnemyRawData;
 
+    std::vector<std::vector<std::vector<int>>> m_NPCRawData;
+
     // 4. 儲存當前樓層生成的敵人物件實體
     const std::vector<std::shared_ptr<Enemy>>& GetEnemies() const { return m_Enemies; }
 
-    //void LoadNPCs(const std::string& filePath);
-    //void InitLevelNPCs();
-    //const std::vector<std::shared_ptr<NPC>>& GetNPCs() const { return m_NPCs; }
-    //std::shared_ptr<NPC> GetNPCAt(float x, float y);
+    void LoadNPCs(const std::string& filePath);
+    void InitLevelNPCs();
+    const std::vector<std::shared_ptr<NPC>>& GetNPCs() const { return m_NPCs; }
+    std::shared_ptr<NPC> GetNPCAt(float x, float y);
 
+    void MoveNPC(std::shared_ptr<NPC> npc, int colOffset, int rowOffset);
 
 private:
     int m_CurrentLevel = 0;
@@ -114,8 +117,7 @@ private:
 
     std::vector<std::shared_ptr<Enemy>> m_Enemies;
 
-    //std::vector<std::vector<std::vector<int>>> m_NPCRawData;
-    //std::vector<std::shared_ptr<NPC>> m_NPCs;
+    std::vector<std::shared_ptr<NPC>> m_NPCs;
 
 
     BackgroundImage m_Wall;  // 牆壁物件

@@ -42,9 +42,9 @@ public:
     int m_Def = 10;
     int m_Coin = 0;
     int m_Exp = 0;
-    int m_YellowKeys = 1;
-    int m_BlueKeys = 1;
-    int m_RedKeys = 1;
+    int m_YellowKeys = 0;
+    int m_BlueKeys = 0;
+    int m_RedKeys = 0;
 
 
 private:

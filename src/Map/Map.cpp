@@ -75,8 +75,8 @@ Map::Map()
         std::string enemyPath = RESOURCE_DIR "/Enemy/Enemy" + std::to_string(i) + ".txt";
         LoadEnemies(enemyPath);
 
-        //std::string npcPath = RESOURCE_DIR "/NPC/NPC" + std::to_string(i) + ".txt";
-        //LoadEnemies(npcPath);
+        std::string npcPath = RESOURCE_DIR "/NPC/NPC" + std::to_string(i) + ".txt";
+        LoadNPCs(npcPath);
     }
     //for (int i = 0; i < 7; ++i) {
         // 讀取物品層
@@ -87,7 +87,7 @@ Map::Map()
 
     m_CurrentLevel = 0;
     InitLevelEnemies();
-    //InitLevelNPCs();
+    InitLevelNPCs();
 }
 
 void Map::UpdateAnimation(float deltaTime) {
@@ -160,33 +160,30 @@ void Map::LoadEnemies(const std::string& filePath) {
     LOG_INFO("Enemy layer loaded successfully: {}", filePath);
 }
 
-// src/Map/Map.cpp
-
-//void Map::LoadNPCs(const std::string& filePath) {
-    //std::ifstream file(filePath);
-    //if (!file.is_open()) {
-       // m_NPCRawData.push_back(std::vector<std::vector<int>>(11, std::vector<int>(11, 0)));
-        //LOG_ERROR("Unable to open NPC save file: {}", filePath);
-        //return;
-    //}
+void Map::LoadNPCs(const std::string& filePath) {
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+       m_NPCRawData.push_back(std::vector<std::vector<int>>(11, std::vector<int>(11, 0)));
+        LOG_ERROR("Unable to open NPC save file: {}", filePath);
+        return;
+    }
 
     // 建立一個 11x11 的二維向量來暫存這一層的 NPC 配置
-    //std::vector<std::vector<int>> levelData(11, std::vector<int>(11));
-    //for (int i = 0; i < 11; i++) {
-        //for (int j = 0; j < 11; j++) {
-           // if (!(file >> levelData[i][j])) {
-            //   levelData[i][j] = 0; // 讀取失敗預設為 0 (無 NPC)
-            //}
-            //file >> levelData[i][j];
-        //}
-   // }
+    std::vector<std::vector<int>> levelData(11, std::vector<int>(11));
+    for (int i = 0; i < 11; i++) {
+        for (int j = 0; j < 11; j++) {
+            if (!(file >> levelData[i][j])) {
+               levelData[i][j] = 0; // 讀取失敗預設為 0 (無 NPC)
+            }
+        }
+    }
 
     // 將這一層的數據推入三維向量 m_NPCRawData 中
-    //m_NPCRawData.push_back(levelData);
-    //file.close();
+    m_NPCRawData.push_back(levelData);
+    file.close();
 
-    //LOG_INFO("NPC layer loaded successfully: {}", filePath);
-//}
+    LOG_INFO("NPC layer loaded successfully: {}", filePath);
+}
 
 void Map::Draw() {
     if (m_MapData.empty() || m_ItemData.empty()) return;
@@ -436,10 +433,10 @@ void Map::Draw() {
         renderer.AddChild(enemy);
     }
 
-    //for (auto& npc : m_NPCs) {
-        //npc->UpdateImage(m_ShowAltFrame); // 跟岩漿、敵人同步動畫
-        //renderer.AddChild(npc);
-    //}
+    for (auto& npc : m_NPCs) {
+        npc->UpdateImage(m_ShowAltFrame); // 跟岩漿、敵人同步動畫
+        renderer.AddChild(npc);
+    }
 
     renderer.Update();
 }
@@ -622,41 +619,70 @@ void Map::RemoveEnemy(std::shared_ptr<Enemy> enemy) {
     );
 }
 
-//void Map::InitLevelNPCs() {
-    //m_NPCs.clear();
-    //if (m_CurrentLevel >= static_cast<int>(m_NPCRawData.size())) return;
+void Map::InitLevelNPCs() {
+    m_NPCs.clear();
+    if (m_CurrentLevel >= static_cast<int>(m_NPCRawData.size())) return;
 
-    //for (int row = 0; row < 11; row++) {
-        //for (int col = 0; col < 11; col++) {
-            //int id = m_NPCRawData[m_CurrentLevel][row][col];
-            //if (id <= 0) continue;
+    for (int row = 0; row < 11; row++) {
+        for (int col = 0; col < 11; col++) {
+            int id = m_NPCRawData[m_CurrentLevel][row][col];
+            if (id <= 0) continue;
 
-            //std::shared_ptr<NPC> npc = nullptr;
-            //if (id == 90) npc = std::make_shared<NPC>(NPC::Type::FAIRY);
-            //else if (id == 91) npc = std::make_shared<NPC>(NPC::Type::ELDER);
-            //else if (id == 92) npc = std::make_shared<NPC>(NPC::Type::MERCHANT);
-            //else if (id == 93) npc = std::make_shared<NPC>(NPC::Type::THIEF);
-            //else if (id == 94) npc = std::make_shared<NPC>(NPC::Type::PRINCESS);
+            std::shared_ptr<NPC> npc = nullptr;
 
-            //if (npc) {
-                //float posX = m_StartX + (col * m_TileSize) + (m_TileSize / 2.0f);
-                //float posY = m_StartY - (row * m_TileSize) - (m_TileSize / 2.0f);
-                //npc->m_Transform.translation = {posX, posY};
-                //m_NPCs.push_back(npc);
-            //}
-        //}
-    //}
-//}
+            if (id == 90) npc = std::make_shared<NPC>(NPC::Type::FAIRY);
+            else if (id == 91) npc = std::make_shared<NPC>(NPC::Type::ELDER);
+            else if (id == 92) npc = std::make_shared<NPC>(NPC::Type::MERCHANT);
+            else if (id == 93) npc = std::make_shared<NPC>(NPC::Type::THIEF);
+            else if (id == 94) npc = std::make_shared<NPC>(NPC::Type::PRINCESS);
 
-//std::shared_ptr<NPC> Map::GetNPCAt(float x, float y) {
-    //for (auto& npc : m_NPCs) {
+            if (npc) {
+                float posX = m_StartX + (col * m_TileSize) + (m_TileSize / 2.0f);
+                float posY = m_StartY - (row * m_TileSize) - (m_TileSize / 2.0f);
+                npc->SetPosition({posX, posY});
+                m_NPCs.push_back(npc);
+            }
+        }
+    }
+}
+
+std::shared_ptr<NPC> Map::GetNPCAt(float x, float y) {
+    for (auto& npc : m_NPCs) {
         // 獲取 NPC 的座標 (根據你之前的修正，使用 m_Transform.translation)
-        //glm::vec2 pos = npc->m_Transform.translation;
+        glm::vec2 pos = npc->m_Transform.translation;
 
         // 判定玩家目標座標與 NPC 座標是否重疊 (容許誤差 5.0f)
-        //if (std::abs(pos.x - x) < 5.0f && std::abs(pos.y - y) < 5.0f) {
-            //return npc;
-        //}
-    //}
-    //return nullptr;
-//}
+        if (std::abs(pos.x - x) < 5.0f && std::abs(pos.y - y) < 5.0f) {
+            return npc;
+        }
+    }
+    return nullptr;
+}
+
+void Map::MoveNPC(std::shared_ptr<NPC> npc, int colOffset, int rowOffset) {
+    if (!npc) return;
+
+    // 1. 取得舊位置
+    glm::vec2 oldPos = npc->m_Transform.translation;
+    int oldCol = static_cast<int>((oldPos.x - m_StartX + 0.1f) / m_TileSize);
+    int oldRow = static_cast<int>((m_StartY - oldPos.y + 0.1f) / m_TileSize);
+
+    // 2. 計算新索引位置
+    int newCol = oldCol + colOffset;
+    int newRow = oldRow + rowOffset;
+
+    // 3. 邊界檢查與原始數據更新
+    if (newRow >= 0 && newRow < 11 && newCol >= 0 && newCol < 11) {
+        // 將舊位置的 NPC 種類儲存起來，轉移到新位置
+        int npcID = m_NPCRawData[m_CurrentLevel][oldRow][oldCol];
+        m_NPCRawData[m_CurrentLevel][oldRow][oldCol] = 0; // 舊位置清空
+        m_NPCRawData[m_CurrentLevel][newRow][newCol] = npcID; // 新位置填入
+
+        // 4. 更新視覺座標
+        float newPosX = m_StartX + (newCol * m_TileSize) + (m_TileSize / 2.0f);
+        float newPosY = m_StartY - (newRow * m_TileSize) - (m_TileSize / 2.0f);
+        npc->m_Transform.translation = {newPosX, newPosY};
+
+        LOG_INFO("NPC moved to ({}, {})", newRow, newCol);
+    }
+}

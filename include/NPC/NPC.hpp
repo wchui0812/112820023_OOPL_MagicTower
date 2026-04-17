@@ -24,6 +24,10 @@ public:
     NPC(Type type);
     void UpdateImage(bool showAltFrame);
 
+    Type GetType() const {
+        return m_Type;
+    }
+
 private:
     Type m_Type;
     Stats m_Stats;

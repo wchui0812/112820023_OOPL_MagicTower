@@ -66,6 +66,8 @@ add_executable(${PROJECT_NAME}
         include/System/BattleAnimation.hpp
         include/NPC/NPC.hpp
         src/NPC/NPC.cpp
+        include/System/NPCEventManager.hpp
+        src/System/NPCEventManager.cpp
 
 
 )

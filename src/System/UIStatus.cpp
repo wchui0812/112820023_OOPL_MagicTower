@@ -52,11 +52,11 @@ UIStatus::UIStatus() {
 
 void UIStatus::Update(const Player& player, const Map& map) {
     // 使用 TextObject::SetText 更新內容
-    m_LevelText->SetText("1");
+    m_LevelText->SetText(std::to_string(player.m_Level));
     m_HpText->SetText(std::to_string(player.m_Hp));
     m_AtkText->SetText(std::to_string(player.m_Atk));
     m_DefText->SetText(std::to_string(player.m_Def));
-    m_ExpText->SetText("0");
+    m_ExpText->SetText(std::to_string(player.m_Exp));
     //m_FloorText->SetText(std::to_string(map.GetCurrentLevel()) + " F");
 
     m_YellowKeyText->SetText(std::to_string(player.m_YellowKeys));
