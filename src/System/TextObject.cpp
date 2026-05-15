@@ -2,6 +2,7 @@
 #include "Util/TransformUtils.hpp" // 必須引入這個標頭檔
 
 TextObject::TextObject(const int &size, const std::string &text, const float &zindex) {
+    m_Size = size;
     m_Text = std::make_shared<Util::Text>(
         RESOURCE_DIR "/Font/Cubic_11.ttf",
         size,
@@ -14,9 +15,14 @@ TextObject::TextObject(const int &size, const std::string &text, const float &zi
 void TextObject::SetText(const std::string &text) {
     // 這裡的大小建議與建構子保持一致，或是儲存一個 m_Size 變數
     m_Text = std::make_shared<Util::Text>(
-        RESOURCE_DIR "/Font/Cubic_11.ttf", 32, text,
+        RESOURCE_DIR "/Font/Cubic_11.ttf", m_Size, text,
         Util::Color::FromName(Util::Colors::WHITE)
     );
+}
+
+glm::vec2 TextObject::GetSize() const {
+    if (!m_Text) return {0.0f, 0.0f};
+    return m_Text->GetSize();
 }
 
 void TextObject::Draw() {

@@ -24,7 +24,7 @@ UIStatus::UIStatus() {
     m_ExpText->m_Transform.translation = {textX, startY - spacing * 4 + 7};
 
     m_FloorText = std::make_shared<TextObject>(fontSize, "0", defaultZ);
-    m_FloorText->m_Transform.translation = {textX, startY - spacing * 5};
+    m_FloorText->m_Transform.translation = {155, 333};
 
     // 鑰匙區域座標設定
     float keyX = -285.0f;
@@ -57,7 +57,7 @@ void UIStatus::Update(const Player& player, const Map& map) {
     m_AtkText->SetText(std::to_string(player.m_Atk));
     m_DefText->SetText(std::to_string(player.m_Def));
     m_ExpText->SetText(std::to_string(player.m_Exp));
-    //m_FloorText->SetText(std::to_string(map.GetCurrentLevel()) + " F");
+    m_FloorText->SetText(std::to_string(map.GetCurrentLevel()) + "   F");
 
     m_YellowKeyText->SetText(std::to_string(player.m_YellowKeys));
     m_BlueKeyText->SetText(std::to_string(player.m_BlueKeys));
@@ -71,7 +71,7 @@ void UIStatus::Draw() {
     m_AtkText->Draw();
     m_DefText->Draw();
     m_ExpText->Draw();
-    //m_FloorText->Draw();
+    m_FloorText->Draw();
     m_YellowKeyText->Draw();
     m_BlueKeyText->Draw();
     m_RedKeyText->Draw();
