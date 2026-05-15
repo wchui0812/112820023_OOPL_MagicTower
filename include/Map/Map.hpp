@@ -64,6 +64,8 @@ public:
     glm::vec2 FindTilePosition(int targetType) const;
 
     void RemoveTile(float x, float y);
+    void SetTileAtLevel(int level, int row, int col, int tileType);
+    void RemoveTileAtLevel(int level, int row, int col);
 
     void TriggerDoorAnimation(float x, float y, int type) {
         m_DoorAnimating = true;
@@ -104,7 +106,14 @@ public:
 
     void MoveNPC(std::shared_ptr<NPC> npc, int colOffset, int rowOffset);
 
+
 private:
+    struct NPCVisualPart {
+        std::shared_ptr<BackgroundImage> object;
+        std::string imagePath1;
+        std::string imagePath2;
+    };
+
     int m_CurrentLevel = 0;
     float m_StartX = -165.0f;
     float m_StartY = 308.0f;
@@ -118,6 +127,7 @@ private:
     std::vector<std::shared_ptr<Enemy>> m_Enemies;
 
     std::vector<std::shared_ptr<NPC>> m_NPCs;
+    std::vector<NPCVisualPart> m_NPCVisualParts;
 
 
     BackgroundImage m_Wall;  // 牆壁物件
@@ -156,6 +166,7 @@ private:
     Item m_ShieldAObj;
     Item m_RebVeriObj;
     Item m_BlueVeriObj;
+    Item m_GodKnifeObj;
 
     float m_AnimationTimer = 0.0f;
     bool m_ShowAltFrame = false;

@@ -43,7 +43,8 @@ Map::Map()
       m_SwordBObj(Item::ItemType::SWORD_B),
       m_ShieldAObj(Item::ItemType::SHIELD_A),
       m_RebVeriObj(Item::ItemType::RED_VERI),
-      m_BlueVeriObj(Item::ItemType::BLUE_VERI)
+      m_BlueVeriObj(Item::ItemType::BLUE_VERI),
+      m_GodKnifeObj(Item::ItemType::GOD_KNIFE)
 
 {
     float newScale = 0.73f;
@@ -360,6 +361,11 @@ void Map::Draw() {
                     m_BlueVeriObj.SetZIndex(1.0f);
                     renderer.AddChild(std::make_shared<Item>(m_BlueVeriObj));
                 }
+                else if (itemType == 50) {
+                    m_GodKnifeObj.SetPosition({posX, posY});
+                    m_GodKnifeObj.SetZIndex(1.0f);
+                    renderer.AddChild(std::make_shared<Item>(m_GodKnifeObj));
+                }
             }
             else if (tileType != 0) {
                 // 原有的地形判定
@@ -436,6 +442,12 @@ void Map::Draw() {
     for (auto& npc : m_NPCs) {
         npc->UpdateImage(m_ShowAltFrame); // 跟岩漿、敵人同步動畫
         renderer.AddChild(npc);
+    }
+
+    for (auto& part : m_NPCVisualParts) {
+        const std::string& imagePath = m_ShowAltFrame ? part.imagePath2 : part.imagePath1;
+        part.object->SetDrawable(std::make_shared<Util::Image>(imagePath));
+        renderer.AddChild(part.object);
     }
 
     renderer.Update();
@@ -519,6 +531,24 @@ void Map::RemoveTile(float x, float y) {
         m_MapData[m_CurrentLevel][row][col] = 0;
         //LOG_INFO("Item removed, floor: {}, coordinates: ({}, {})", m_CurrentLevel, row, col);
     }
+}
+
+void Map::SetTileAtLevel(int level, int row, int col, int tileType) {
+    if (level < 0 || level >= static_cast<int>(m_MapData.size())) return;
+    if (row < 0 || row >= static_cast<int>(m_MapData[level].size())) return;
+    if (col < 0 || col >= static_cast<int>(m_MapData[level][row].size())) return;
+
+    m_MapData[level][row][col] = tileType;
+}
+
+void Map::RemoveTileAtLevel(int level, int row, int col) {
+    SetTileAtLevel(level, row, col, 0);
+
+    if (level < 0 || level >= static_cast<int>(m_ItemData.size())) return;
+    if (row < 0 || row >= static_cast<int>(m_ItemData[level].size())) return;
+    if (col < 0 || col >= static_cast<int>(m_ItemData[level][row].size())) return;
+
+    m_ItemData[level][row][col] = 0;
 }
 
 void Map::InitLevelEnemies() {
@@ -621,7 +651,16 @@ void Map::RemoveEnemy(std::shared_ptr<Enemy> enemy) {
 
 void Map::InitLevelNPCs() {
     m_NPCs.clear();
+    m_NPCVisualParts.clear();
     if (m_CurrentLevel >= static_cast<int>(m_NPCRawData.size())) return;
+
+    auto addNPCVisualPart = [&](float x, float y, const std::string& imagePath1, const std::string& imagePath2) {
+        auto part = std::make_shared<BackgroundImage>(imagePath1);
+        part->SetPosition({x, y});
+        part->SetScale({1.75f, 1.75f});
+        part->SetZIndex(5.0f);
+        m_NPCVisualParts.push_back({part, imagePath1, imagePath2});
+    };
 
     for (int row = 0; row < 11; row++) {
         for (int col = 0; col < 11; col++) {
@@ -630,17 +669,44 @@ void Map::InitLevelNPCs() {
 
             std::shared_ptr<NPC> npc = nullptr;
 
-            if (id == 90) npc = std::make_shared<NPC>(NPC::Type::FAIRY);
-            else if (id == 91) npc = std::make_shared<NPC>(NPC::Type::ELDER);
-            else if (id == 92) npc = std::make_shared<NPC>(NPC::Type::MERCHANT);
+            if (id == 90) npc = std::make_shared<NPC>(NPC::Type::FAIRY1);
+            else if (id == 91) npc = std::make_shared<NPC>(NPC::Type::ELDER1);
+            else if (id == 92) npc = std::make_shared<NPC>(NPC::Type::MERCHANT1);
             else if (id == 93) npc = std::make_shared<NPC>(NPC::Type::THIEF);
             else if (id == 94) npc = std::make_shared<NPC>(NPC::Type::PRINCESS);
+            else if (id == 95) npc = std::make_shared<NPC>(NPC::Type::ELDER2);
+            else if (id == 96) npc = std::make_shared<NPC>(NPC::Type::MERCHANT2);
+            else if (id == 97) npc = std::make_shared<NPC>(NPC::Type::ELDER3);
+            else if (id == 98) npc = std::make_shared<NPC>(NPC::Type::FAIRY2);
+            else if (id == 100) npc = std::make_shared<NPC>(NPC::Type::SHOP_1);
+            else if (id == 101) npc = std::make_shared<NPC>(NPC::Type::SHOP_2);
+            else if (id == 102) npc = std::make_shared<NPC>(NPC::Type::ELDER_SHOP_1);
+            else if (id == 103) npc = std::make_shared<NPC>(NPC::Type::ELDER_SHOP_2);
+            else if (id == 104) npc = std::make_shared<NPC>(NPC::Type::MERCHANT_SHOP_1);
+            else if (id == 105) npc = std::make_shared<NPC>(NPC::Type::MERCHANT_SHOP_2);
 
             if (npc) {
                 float posX = m_StartX + (col * m_TileSize) + (m_TileSize / 2.0f);
                 float posY = m_StartY - (row * m_TileSize) - (m_TileSize / 2.0f);
                 npc->SetPosition({posX, posY});
                 m_NPCs.push_back(npc);
+
+                if (id == 100 || id == 101) {
+                    const std::string prefix = RESOURCE_DIR "/Image/Character/Shop/Shop";
+
+                    addNPCVisualPart(
+                        posX - m_TileSize,
+                        posY,
+                        prefix + "A1.png",
+                        prefix + "B1.png"
+                    );
+                    addNPCVisualPart(
+                        posX + m_TileSize,
+                        posY,
+                        prefix + "A3.png",
+                        prefix + "B3.png"
+                    );
+                }
             }
         }
     }
@@ -686,3 +752,4 @@ void Map::MoveNPC(std::shared_ptr<NPC> npc, int colOffset, int rowOffset) {
         LOG_INFO("NPC moved to ({}, {})", newRow, newCol);
     }
 }
+
