@@ -2,6 +2,7 @@
 #include "Map/Map.hpp"
 #include "Map/Stair.hpp"
 #include "System/CollisionHandler.hpp"
+#include "System/BattleScene.hpp"
 #include "Util/Input.hpp"
 #include "Util/Keycode.hpp"
 
@@ -24,7 +25,14 @@ Player::Player() {
     m_ZIndex = 5.0f;
 }
 
-void Player::Update(Map& map, BattleAnimation& anim) {
+void Player::Update(
+    Map& map,
+    BattleAnimation& anim,
+    BattleScene& battleScene,
+    RewardMessage& rewardMessage,
+    NPCDialog& npcDialog,
+    ShopScene& shopScene
+) {
     float moveDist = 56.0f;
     glm::vec2 currentPos = m_Transform.translation;
     glm::vec2 targetPos = currentPos; // 用來存放「預計要去的那一格」
@@ -60,7 +68,7 @@ void Player::Update(Map& map, BattleAnimation& anim) {
 
     // 2. 將碰撞與觸發邏輯委託給 CollisionHandler
     // 傳入 *this 與 map，讓 Handler 處理數值增減與門的動畫觸發
-    if (CollisionHandler::HandleCollision(*this, map, targetPos, anim)) {
+    if (CollisionHandler::HandleCollision(*this, map, targetPos, anim, battleScene, rewardMessage, npcDialog, shopScene)) {
         // 如果 Handler 回傳 true，代表該格子可踏入（如地板、撿完的物品）
         m_Transform.translation = targetPos;
 

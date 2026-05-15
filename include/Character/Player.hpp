@@ -7,6 +7,10 @@
 
 #include "Map/Map.hpp"
 #include "System/BattleAnimation.hpp"
+#include "System/BattleScene.hpp"
+#include "System/NPCDialog.hpp"
+#include "System/RewardMessage.hpp"
+#include "System/ShopScene.hpp"
 #include "Util/GameObject.hpp"
 #include "Util/Image.hpp"
 
@@ -16,7 +20,14 @@ public:
 
     explicit Player(); // 建構子改到 .cpp 實作
 
-    void Update();
+    void Update(
+        Map& map,
+        BattleAnimation& anim,
+        BattleScene& battleScene,
+        RewardMessage& rewardMessage,
+        NPCDialog& npcDialog,
+        ShopScene& shopScene
+    );
 
     void SetDirection(Direction dir);
     void Move(const glm::vec2& delta);
@@ -34,9 +45,7 @@ public:
         return m_Transform.translation;
     }
 
-    void Update(Map& map, BattleAnimation& anim);
-
-    int m_Level = 1;
+    /*int m_Level = 1;
     int m_Hp = 1000;
     int m_Atk = 10;
     int m_Def = 10;
@@ -44,7 +53,17 @@ public:
     int m_Exp = 0;
     int m_YellowKeys = 0;
     int m_BlueKeys = 0;
-    int m_RedKeys = 0;
+    int m_RedKeys = 0;*/
+
+    int m_Level = 30;
+    int m_Hp = 9999;
+    int m_Atk = 999;
+    int m_Def = 999;
+    int m_Coin = 600;
+    int m_Exp = 0;
+    int m_YellowKeys = 30;
+    int m_BlueKeys = 30;
+    int m_RedKeys = 30;
 
 
 private:
