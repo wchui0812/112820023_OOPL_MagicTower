@@ -41,8 +41,23 @@ add_executable(${PROJECT_NAME}
         src/Map/Stair.cpp
         src/Map/Door.cpp
         src/Character/Player.cpp
+        src/Enemy/Enemy.cpp
         src/Item/Item.cpp
         src/System/CollisionHandler.cpp
+        src/System/UIStatus.cpp
+        src/System/TextObject.cpp
+        src/System/Battle.cpp
+        src/System/NPCEventManager.cpp
+        src/System/NPCDialog.cpp
+        src/System/BattleScene.cpp
+        src/System/ShopScene.cpp
+        src/System/ShopEventManager.cpp
+        src/Shop/Shop.cpp
+        src/NPC/NPC.cpp
+        src/System/RewardMessage.cpp
+
+
+
 
     ${INCLUDE_FILES}
         include/App/App.hpp
@@ -55,19 +70,18 @@ add_executable(${PROJECT_NAME}
         include/Item/Item.hpp
         include/System/CollisionHandler.hpp
         include/System/UIStatus.hpp
-        src/System/UIStatus.cpp
         include/System/TextObject.hpp
-        include/System/TextObject.hpp
-        src/System/TextObject.cpp
         include/Enemy/Enemy.hpp
-        src/Enemy/Enemy.cpp
         include/System/Battle.hpp
-        src/System/Battle.cpp
         include/System/BattleAnimation.hpp
         include/NPC/NPC.hpp
-        src/NPC/NPC.cpp
         include/System/NPCEventManager.hpp
-        src/System/NPCEventManager.cpp
+        include/System/NPCDialog.hpp
+        include/System/BattleScene.hpp
+        include/System/RewardMessage.hpp
+        include/System/ShopScene.hpp
+        include/System/ShopEventManager.hpp
+        include/Shop/Shop.hpp
 
 
 )

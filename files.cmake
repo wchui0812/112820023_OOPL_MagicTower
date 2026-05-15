@@ -7,6 +7,10 @@ set(SRC_FILES
         src/Map/Door.cpp
         src/Item/Item.cpp
         src/System/CollisionHandler.cpp
+        src/System/NPCDialog.cpp
+        src/System/ShopScene.cpp
+        src/System/ShopEventManager.cpp
+        src/Shop/Shop.cpp
 )
 
 set(INCLUDE_FILES
@@ -18,6 +22,10 @@ set(INCLUDE_FILES
         include/Map/Door.hpp
         include/Item/Item.hpp
         include/System/CollisionHandler.hpp
+        include/System/NPCDialog.hpp
+        include/System/ShopScene.hpp
+        include/System/ShopEventManager.hpp
+        include/Shop/Shop.hpp
 )
 
 set(TEST_FILES
