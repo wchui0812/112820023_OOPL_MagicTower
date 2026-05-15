@@ -29,7 +29,7 @@ public:
         SHIELD_A = 47,
         RED_VERI = 48,
         BLUE_VERI = 49,
-
+        GOD_KNIFE = 50,
     };
 
     Item(ItemType type);
