@@ -6,11 +6,11 @@
 #include <vector>
 
 #include "Map/Map.hpp"
-#include "System/BattleAnimation.hpp"
+#include "NPC/NPCDialog.hpp"
+#include "Shop/ShopScene.hpp"
 #include "System/BattleScene.hpp"
-#include "System/NPCDialog.hpp"
 #include "System/RewardMessage.hpp"
-#include "System/ShopScene.hpp"
+
 #include "Util/GameObject.hpp"
 #include "Util/Image.hpp"
 
@@ -22,7 +22,6 @@ public:
 
     void Update(
         Map& map,
-        BattleAnimation& anim,
         BattleScene& battleScene,
         RewardMessage& rewardMessage,
         NPCDialog& npcDialog,
@@ -45,7 +44,7 @@ public:
         return m_Transform.translation;
     }
 
-    /*int m_Level = 1;
+    int m_Level = 1;
     int m_Hp = 1000;
     int m_Atk = 10;
     int m_Def = 10;
@@ -53,17 +52,19 @@ public:
     int m_Exp = 0;
     int m_YellowKeys = 0;
     int m_BlueKeys = 0;
-    int m_RedKeys = 0;*/
+    int m_RedKeys = 0;
 
-    int m_Level = 30;
-    int m_Hp = 9999;
-    int m_Atk = 999;
-    int m_Def = 999;
-    int m_Coin = 600;
-    int m_Exp = 0;
-    int m_YellowKeys = 30;
-    int m_BlueKeys = 30;
-    int m_RedKeys = 30;
+    bool m_Cross = false;
+    bool m_BlueVeri = false;
+    bool m_RedVeri = false;
+    bool m_GreenVeri = false;
+    bool m_HasWindCompass = false;
+    bool m_HasMonsterBook = false;
+    int m_MaxReachedFloor = 0;
+    bool m_HasGemDigger = false;
+    bool m_ThiefOpenedSecondFloorDoor = false;
+    bool m_ThiefOpenedPrincessPath = false;
+    bool m_RedDemon16DialogShown = false;
 
 
 private:
