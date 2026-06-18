@@ -1,31 +1,56 @@
 set(SRC_FILES
         src/App/App.cpp
         src/App/main.cpp
-        src/Character/Player.cpp
         src/Map/Map.cpp
         src/Map/Stair.cpp
         src/Map/Door.cpp
+        src/Character/Player.cpp
+        src/Enemy/Enemy.cpp
         src/Item/Item.cpp
         src/System/CollisionHandler.cpp
-        src/System/NPCDialog.cpp
-        src/System/ShopScene.cpp
-        src/System/ShopEventManager.cpp
+        src/System/UIStatus.cpp
+        src/System/TextObject.cpp
+        src/System/Battle.cpp
+        src/System/GameFlowScene.cpp
+        src/System/FloorTeleport.cpp
+        src/System/MonsterBook.cpp
+        src/System/NoticeScene.cpp
+        src/System/BattleScene.cpp
+        src/System/RewardMessage.cpp
         src/Shop/Shop.cpp
+        src/Shop/ShopScene.cpp
+        src/Shop/ShopEventManager.cpp
+        src/NPC/NPC.cpp
+        src/NPC/NPCEventManager.cpp
+        src/NPC/NPCDialog.cpp
 )
 
 set(INCLUDE_FILES
         include/App/App.hpp
-        include/Character/Player.hpp
-        include/Character/Character.hpp
+        include/App/BackgroundImage.hpp
         include/Map/Map.hpp
         include/Map/Stair.hpp
         include/Map/Door.hpp
+        include/Character/Player.hpp
+        include/Character/Character.hpp
+        include/Enemy/Enemy.hpp
         include/Item/Item.hpp
         include/System/CollisionHandler.hpp
-        include/System/NPCDialog.hpp
-        include/System/ShopScene.hpp
-        include/System/ShopEventManager.hpp
+        include/System/UIStatus.hpp
+        include/System/TextObject.hpp
+        include/System/Battle.hpp
+        include/System/GameFlowScene.hpp
+        include/System/FloorTeleport.hpp
+        include/System/MonsterBook.hpp
+        include/System/NoticeScene.hpp
+        include/System/BattleScene.hpp
+        include/System/RewardMessage.hpp
         include/Shop/Shop.hpp
+        include/Shop/ShopScene.hpp
+        include/Shop/ShopEventManager.hpp
+        include/NPC/NPC.hpp
+        include/NPC/NPCEventManager.hpp
+        include/NPC/NPCDialog.hpp
 )
 
 set(TEST_FILES

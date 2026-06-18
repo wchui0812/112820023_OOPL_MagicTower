@@ -47,14 +47,19 @@ add_executable(${PROJECT_NAME}
         src/System/UIStatus.cpp
         src/System/TextObject.cpp
         src/System/Battle.cpp
-        src/System/NPCEventManager.cpp
-        src/System/NPCDialog.cpp
+        src/System/GameFlowScene.cpp
+        src/System/FloorTeleport.cpp
+        src/System/MonsterBook.cpp
+        src/System/NoticeScene.cpp
         src/System/BattleScene.cpp
-        src/System/ShopScene.cpp
-        src/System/ShopEventManager.cpp
-        src/Shop/Shop.cpp
-        src/NPC/NPC.cpp
         src/System/RewardMessage.cpp
+        src/Shop/Shop.cpp
+        src/Shop/ShopScene.cpp
+        src/Shop/ShopEventManager.cpp
+        src/NPC/NPC.cpp
+        src/NPC/NPCEventManager.cpp
+        src/NPC/NPCDialog.cpp
+
 
 
 
@@ -67,22 +72,24 @@ add_executable(${PROJECT_NAME}
         include/Map/Door.hpp
         include/Character/Player.hpp
         include/Character/Character.hpp
+        include/Enemy/Enemy.hpp
         include/Item/Item.hpp
         include/System/CollisionHandler.hpp
         include/System/UIStatus.hpp
         include/System/TextObject.hpp
-        include/Enemy/Enemy.hpp
         include/System/Battle.hpp
-        include/System/BattleAnimation.hpp
-        include/NPC/NPC.hpp
-        include/System/NPCEventManager.hpp
-        include/System/NPCDialog.hpp
+        include/System/GameFlowScene.hpp
+        include/System/FloorTeleport.hpp
+        include/System/MonsterBook.hpp
+        include/System/NoticeScene.hpp
         include/System/BattleScene.hpp
         include/System/RewardMessage.hpp
-        include/System/ShopScene.hpp
-        include/System/ShopEventManager.hpp
         include/Shop/Shop.hpp
-
+        include/Shop/ShopScene.hpp
+        include/Shop/ShopEventManager.hpp
+        include/NPC/NPC.hpp
+        include/NPC/NPCEventManager.hpp
+        include/NPC/NPCDialog.hpp
 
 )
 
