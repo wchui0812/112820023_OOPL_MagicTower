@@ -1,12 +1,16 @@
-#include "System/NPCDialog.hpp"
+#include "NPC/NPCDialog.hpp"
 
 #include "Util/Input.hpp"
 #include "Util/Keycode.hpp"
 #include "Util/TransformUtils.hpp"
 
+#include <fstream>
 #include <utility>
 
 namespace {
+constexpr float kMapCenterX = -165.0f + (56.0f * 11.0f / 2.0f);
+constexpr float kMapCenterY = 308.0f - (56.0f * 11.0f / 2.0f);
+
 std::size_t GetUtf8CharLength(unsigned char c) {
     if ((c & 0x80) == 0) return 1;
     if ((c & 0xE0) == 0xC0) return 2;
@@ -14,14 +18,31 @@ std::size_t GetUtf8CharLength(unsigned char c) {
     if ((c & 0xF8) == 0xF0) return 4;
     return 1;
 }
+
+bool FileExists(const std::string& path) {
+    std::ifstream file(path);
+    return file.good();
+}
+
+std::string InferNextPortraitPath(const std::string& path) {
+    const std::size_t dotPos = path.find_last_of('.');
+    if (dotPos == std::string::npos || dotPos == 0) return "";
+
+    const std::size_t digitPos = dotPos - 1;
+    if (path[digitPos] < '0' || path[digitPos] > '8') return "";
+
+    std::string nextPath = path;
+    nextPath[digitPos] = static_cast<char>(nextPath[digitPos] + 1);
+    return FileExists(nextPath) ? nextPath : "";
+}
 }
 
 NPCDialog::NPCDialog() {
-    m_Background = std::make_shared<Util::Image>(RESOURCE_DIR "/Image/NPC/NPCDialog.bmp");
+    m_Background = std::make_shared<Util::Image>(RESOURCE_DIR "/Image/Character/NPC/NPCDialog.bmp");
     m_Drawable = m_Background;
 
     m_ZIndex = 70.0f;
-    m_Transform.translation = {0.0f, 0.0f};
+    m_Transform.translation = {kMapCenterX, kMapCenterY};
 
     m_NameText = std::make_shared<TextObject>(24, " ", m_ZIndex + 1.0f);
     m_HintText = std::make_shared<TextObject>(20, "Space / Enter", m_ZIndex + 1.0f);
@@ -41,7 +62,7 @@ void NPCDialog::Start(const std::string& speakerName, const std::vector<std::str
     std::vector<DialogLine> dialogLines;
     dialogLines.reserve(lines.size());
     for (const auto& line : lines) {
-        dialogLines.push_back({speakerName, line, " "});
+        dialogLines.push_back({speakerName, line, ""});
     }
 
     Start(dialogLines, nullptr);
@@ -58,6 +79,8 @@ void NPCDialog::Start(const std::vector<DialogLine>& lines, std::function<void()
     m_OnFinish = std::move(onFinish);
     m_CurrentLine = 0;
     m_InputCooldown = m_InputDelay;
+    m_PortraitTimer = 0.0f;
+    m_ShowAltPortrait = false;
     m_Active = true;
     SetVisible(true);
 
@@ -66,6 +89,8 @@ void NPCDialog::Start(const std::vector<DialogLine>& lines, std::function<void()
 
 void NPCDialog::Update(float deltaTime) {
     if (!m_Active) return;
+
+    RefreshPortrait(deltaTime);
 
     if (m_InputCooldown > 0.0f) {
         m_InputCooldown -= deltaTime;
@@ -130,10 +155,31 @@ void NPCDialog::RefreshText() {
     }
 
     if (!line.portraitPath.empty()) {
-        m_Portrait = std::make_shared<Util::Image>(line.portraitPath);
+        m_PortraitPath1 = line.portraitPath;
+        m_PortraitPath2 = !line.portraitPath2.empty()
+            ? line.portraitPath2
+            : InferNextPortraitPath(line.portraitPath);
+        m_PortraitTimer = 0.0f;
+        m_ShowAltPortrait = false;
+        m_Portrait = std::make_shared<Util::Image>(m_PortraitPath1);
     } else {
+        m_PortraitPath1.clear();
+        m_PortraitPath2.clear();
         m_Portrait = nullptr;
     }
+}
+
+void NPCDialog::RefreshPortrait(float deltaTime) {
+    if (m_PortraitPath1.empty() || m_PortraitPath2.empty()) return;
+
+    m_PortraitTimer += deltaTime;
+    if (m_PortraitTimer < m_PortraitFrameInterval) return;
+
+    m_PortraitTimer = 0.0f;
+    m_ShowAltPortrait = !m_ShowAltPortrait;
+    m_Portrait = std::make_shared<Util::Image>(
+        m_ShowAltPortrait ? m_PortraitPath2 : m_PortraitPath1
+    );
 }
 
 std::vector<std::string> NPCDialog::WrapText(const std::string& text) const {
@@ -186,6 +232,8 @@ void NPCDialog::Finish() {
     m_Active = false;
     m_DialogLines.clear();
     m_Portrait = nullptr;
+    m_PortraitPath1.clear();
+    m_PortraitPath2.clear();
     SetVisible(false);
 
     if (m_OnFinish) {

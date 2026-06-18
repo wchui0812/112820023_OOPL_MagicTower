@@ -2,6 +2,7 @@
 #define NPC_DIALOG_HPP
 
 #include "System/TextObject.hpp"
+
 #include "Util/GameObject.hpp"
 #include "Util/Image.hpp"
 
@@ -16,6 +17,7 @@ public:
         std::string speakerName;
         std::string text;
         std::string portraitPath;
+        std::string portraitPath2 = "";
     };
 
     NPCDialog();
@@ -31,12 +33,16 @@ public:
 private:
     void RefreshText();
     void Finish();
+    void RefreshPortrait(float deltaTime);
     std::vector<std::string> WrapText(const std::string& text) const;
     void SetTextLeftAligned(TextObject& textObject, const std::string& text, const glm::vec2& leftCenterPos) const;
 
     bool m_Active = false;
     float m_InputCooldown = 0.0f;
     const float m_InputDelay = 0.18f;
+    float m_PortraitTimer = 0.0f;
+    const float m_PortraitFrameInterval = 0.5f;
+    bool m_ShowAltPortrait = false;
 
     std::size_t m_CurrentLine = 0;
     std::string m_SpeakerName;
@@ -46,6 +52,8 @@ private:
 
     std::shared_ptr<Util::Image> m_Background;
     std::shared_ptr<Util::Image> m_Portrait;
+    std::string m_PortraitPath1;
+    std::string m_PortraitPath2;
     std::shared_ptr<TextObject> m_NameText;
     std::vector<std::shared_ptr<TextObject>> m_LineTexts;
     std::shared_ptr<TextObject> m_HintText;

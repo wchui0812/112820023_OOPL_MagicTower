@@ -2,6 +2,7 @@
 #define NPC_HPP
 
 #include "App/BackgroundImage.hpp"
+
 #include <string>
 #include <unordered_map>
 
@@ -12,10 +13,10 @@ public:
         FAIRY2,
         ELDER1,
         ELDER2,
-        ELDER3,// 智者（老人）
+        ELDER3,
         MERCHANT1,
-        MERCHANT2,// 商人
-        THIEF,      // 小偷
+        MERCHANT2,
+        THIEF,
         PRINCESS,
         SHOP_1,
         SHOP_2,

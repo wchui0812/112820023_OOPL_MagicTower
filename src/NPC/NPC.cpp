@@ -1,4 +1,5 @@
 #include "NPC/NPC.hpp"
+
 #include "Util/Image.hpp"
 
 // 定義 NPC 數據表
