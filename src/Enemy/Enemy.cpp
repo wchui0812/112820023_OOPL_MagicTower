@@ -34,28 +34,82 @@ const std::unordered_map<Enemy::Type, Enemy::Stats> Enemy::s_EnemyDataTable = {
     {Enemy::Type::SLIME_MAN,       {"影子戰士", 3100,1150,1050,92,80, RESOURCE_DIR "/Image/Character/Enemy/SlimeMan1.png",RESOURCE_DIR "/Image/Character/Enemy/SlimeMan2.png"}},
     {Enemy::Type::VAMPIRE,         {"冥靈魔王",30000,1700,1500,250,220, RESOURCE_DIR "/Image/Character/Enemy/Vampire1.png",RESOURCE_DIR "/Image/Character/Enemy/Vampire2.png"}},
     {Enemy::Type::OCTOPUS,         {"血影",99999,5000,4000,0,0, RESOURCE_DIR "/Image/Character/Enemy/Octopus8.png",RESOURCE_DIR "/Image/Character/Enemy/Octopus8.png"}},
-    {Enemy::Type::DRAGON,         {"魔龍", 99999,9999,5000,0,0, RESOURCE_DIR "/Image/Character/Enemy/Dragon8.png",RESOURCE_DIR "/Image/Character/Enemy/Octopus8.png"}}
+    {Enemy::Type::DRAGON,         {"魔龍", 99999,9999,5000,0,0, RESOURCE_DIR "/Image/Character/Enemy/Drangon8.png",RESOURCE_DIR "/Image/Character/Enemy/Drangon8.png"}}
 };
 
 Enemy::Enemy(Type type) 
     : BackgroundImage(s_EnemyDataTable.at(type).imagePath1), m_Type(type) {
-    
-    // 從數據表中拷貝數值到當前實例
+
     m_Stats = s_EnemyDataTable.at(type);
-    
-    // 設定預設縮放與層級 (確保跟地圖格子大小一致)
+    ApplyLevelStats(0);
+
     this->SetScale({1.75f,1.75f});
-    this->m_ZIndex = 5.0f; // 設在背景之上，UI 之下
+    this->m_ZIndex = 5.0f;
+}
+
+void Enemy::ApplyLevelStats(int level) {
+    auto setStats = [&](int hp, int atk, int def, int coin, int exp) {
+        m_Stats.hp = hp;
+        m_Stats.atk = atk;
+        m_Stats.def = def;
+        m_Stats.coin = coin;
+        m_Stats.exp = exp;
+    };
+
+    m_Stats.openingDamage = 0;
+    m_Stats.openingDamageDivisor = 0;
+
+    if (m_Type == Type::MAGICIAN_B) {
+        m_Stats.openingDamage = 100;
+    } else if (m_Type == Type::MAGICIAN_A) {
+        m_Stats.openingDamage = 300;
+    } else if (m_Type == Type::MAGIC_SERGEANT_D) {
+        m_Stats.openingDamageDivisor = 4;
+    } else if (m_Type == Type::DARK_MAGICIAN) {
+        m_Stats.openingDamageDivisor = 3;
+    }
+
+    if (m_Type == Type::MAGIC_SERGEANT_A && level >= 19) {
+        setStats(20000, 1333, 1333, 133, 133);
+    } else if (m_Type == Type::VAMPIRE) {
+        if (level >= 23) {
+            setStats(60000, 3400, 3000, 390, 343);
+        } else if (level >= 21) {
+            setStats(45000, 2550, 2250, 312, 275);
+        }
+    } else if (m_Type == Type::DARK_MAGICIAN) {
+        if (level >= 23) {
+            setStats(3000, 2212, 1946, 132, 116);
+        } else if (level >= 21) {
+            setStats(2000, 1106, 973, 106, 93);
+        }
+    } else if (m_Type == Type::SOUL_SKELETON && level >= 16) {
+        setStats(3333, 1200, 1133, 112, 100);
+    } else if (m_Type == Type::SLIME_MAN) {
+        if (level >= 22) {
+            setStats(2400, 2612, 2400, 146, 125);
+        } else if (level >= 16) {
+            setStats(1600, 1306, 1200, 117, 100);
+        }
+    }
+}
+
+int Enemy::GetOpeningDamage(int playerHp) const {
+    return CalculateOpeningDamage(m_Stats, playerHp);
+}
+
+int Enemy::CalculateOpeningDamage(const Stats& stats, int playerHp) {
+    if (stats.openingDamage > 0) return stats.openingDamage;
+    if (stats.openingDamageDivisor > 0) return playerHp / stats.openingDamageDivisor;
+    return 0;
 }
 
 void Enemy::UpdateImage(bool showAltFrame) {
-    // 檢查目前顯示的是否已經是目標幀，避免每一幀都重複讀取檔案
+
     if (m_CurrentFrameIsAlt == showAltFrame) return;
 
     m_CurrentFrameIsAlt = showAltFrame;
 
-    // 修正點：BackgroundImage 內部是透過 m_Drawable 來渲染的
-    // 我們直接更換 m_Drawable 指向的 Image 物件
     if (showAltFrame) {
         this->m_Drawable = std::make_shared<Util::Image>(m_Stats.imagePath2);
     } else {

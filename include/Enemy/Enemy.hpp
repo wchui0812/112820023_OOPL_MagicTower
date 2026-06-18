@@ -2,6 +2,7 @@
 #define ENEMY_HPP
 
 #include "App/BackgroundImage.hpp"
+
 #include <string>
 #include <unordered_map>
 
@@ -52,15 +53,21 @@ public:
         int exp;
         std::string imagePath1;
         std::string imagePath2;
+        int openingDamage = 0;
+        int openingDamageDivisor = 0;
 
     };
 
     Enemy(Type type);
 
     void UpdateImage(bool showAltFrame);
+    void ApplyLevelStats(int level);
+    int GetOpeningDamage(int playerHp) const;
+    static int CalculateOpeningDamage(const Stats& stats, int playerHp);
 
     // 取得當前怪物的數值
     const Stats& GetStats() const { return m_Stats; }
+    Type GetType() const { return m_Type; }
 
 private:
     Type m_Type;
