@@ -1,4 +1,5 @@
 #include "System/UIStatus.hpp"
+
 #include "Util/Renderer.hpp"
 
 UIStatus::UIStatus() {
@@ -57,7 +58,7 @@ void UIStatus::Update(const Player& player, const Map& map) {
     m_AtkText->SetText(std::to_string(player.m_Atk));
     m_DefText->SetText(std::to_string(player.m_Def));
     m_ExpText->SetText(std::to_string(player.m_Exp));
-    m_FloorText->SetText(std::to_string(map.GetCurrentLevel()) + "   F");
+    m_FloorText->SetText(map.GetDisplayLevelName());
 
     m_YellowKeyText->SetText(std::to_string(player.m_YellowKeys));
     m_BlueKeyText->SetText(std::to_string(player.m_BlueKeys));
