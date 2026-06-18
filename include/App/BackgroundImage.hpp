@@ -14,10 +14,6 @@ public:
     }
 
 
-    [[nodiscard]] std::shared_ptr<Core::Drawable> GetDrawable() const {
-        return m_Drawable;
-    }
-
     void SetScale(const glm::vec2& scale) {
         m_Transform.scale = scale;
     }
@@ -26,10 +22,6 @@ public:
     void SetPosition(const glm::vec2& position) {
         m_Transform.translation = position;
     }
-
-    //[[nodiscard]] std::shared_ptr<Util::Drawable> GetDrawable() const {
-        //return m_Drawable;
-    //}
 
     // 執行繪製 (會由 App 的 Render 自動或手動呼叫)
 };
