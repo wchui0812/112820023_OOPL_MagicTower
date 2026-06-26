@@ -65,6 +65,32 @@
     - 按 L 可以開啟/關閉功能
     - 左右鍵切換頁面
 
+### DebugMode 測試模式
+
+為了方便測試不同樓層、劇情事件、商店、戰鬥與結局流程，本專案在 `App.cpp` 中設計了 DebugMode。開啟後可以跳過登入畫面、Loading 與片頭動畫，直接進入指定樓層與指定座標，減少每次測試都要從第一層重新遊玩的時間。
+
+DebugMode 主要可調整的項目如下：
+
+| 設定項目 | 功能 |
+|---|---|
+| `kDebugMode` | 是否啟用測試模式 |
+| `kDebugLevel` | 指定起始樓層 |
+| `kDebugSpawnRow` / `kDebugSpawnCol` | 指定勇者起始格子座標 |
+| `kDebugOverridePlayerStats` | 是否覆蓋勇者初始能力值 |
+| `kDebugHp` / `kDebugAtk` / `kDebugDef` | 指定勇者血量、攻擊力、防禦力 |
+| `kDebugExp` / `kDebugCoin` | 指定勇者經驗值與金幣 |
+| `kDebugYellowKeys` / `kDebugBlueKeys` / `kDebugRedKeys` | 指定三種鑰匙數量 |
+| `kDebugHasWindCompass` | 是否一開始取得風之羅盤，用來測試樓層飛升 |
+| `kDebugHasMonsterBook` | 是否一開始取得怪物手冊 |
+| `kDebugOverrideMaxReachedFloor` / `kDebugMaxReachedFloor` | 指定樓層飛升可到達的最高樓層 |
+| `kDebugReleaseFinalSeal` | 是否解除最終封印，用來測試血影與結局 |
+
+正式執行時只需要將：
+
+```cpp
+const bool kDebugMode = false;
+```
+
 ### 遊戲畫面
 
 |    階段    |                        遊戲畫面                        |
